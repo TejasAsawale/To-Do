@@ -1,11 +1,49 @@
 const mongoose = require('mongoose');
-const TaskSchema = new mongoose.Schema({
-    title: { type: String, required: [true, 'Task title required Please'],trim: true},
-    description: { type: String },
-    status: { type: String, default: "pending" },
-    dueDate: { type: Date },
-    priority: { type: String, default: "normal" },
-    category: { type: String },
-    collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+
+const taskSchema = new mongoose.Schema({
+    title:{
+        type:String,
+        required:[true,'task title is required'],
+        required:true,
+        trim:true,
+    },
+    date: {
+        type: Date,
+        required: [true, 'Date is required'],
+        required:true,
+    },
+    priority: {
+        type: String,
+        enum: ['extreme', 'moderate', 'low'],
+        required:true,
+        default: 'moderate',
+    },
+    taskDescription: {
+        type: String,
+        required: [true, 'Task description is required'],
+        trim: true,
+    },
+    image: {
+        type: String, 
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+}, { timestamps: true });
+
+taskSchema.pre('save', function (next) {
+    this.updatedAt = Date.now();
+    next();
 });
-module.exports = mongoose.model('Task', TaskSchema);
+const Task = mongoose.model('Task',taskSchema);
+module.exports = Task;

@@ -1,9 +1,10 @@
 const express = require("express");
-const { addTask, getTasks } = require("../controllers/taskController");
-const auth = require("../middleware/authMiddleware");
+const taskController = require("../controllers/taskController");
+const { protect }= require("../middleware/authMiddleware");
 const router = express.Router();
+const upload = require("../config/multer");
 
-router.post("/add", auth, addTask);
-router.get("/mytasks", auth, getTasks);
+router.post("/createTask",protect,upload.single('image'),taskController.CreateTask);
+// router.get("/mytasks", auth, getTasks);
 
 module.exports = router;
