@@ -1,0 +1,16 @@
+.task-list {
+    flex: 1;
+    padding: 20px;
+}
+
+.task-list h2 {
+    margin-bottom: 20px;
+}
+
+.task-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,43 @@
+.dashboard {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.task-section {
+    display: flex;
+    justify-content: space-between;
+}
+
+.to-do, .stats {
+    width: 48%;
+}
+
+.stats-circle {
+    display: flex;
+    justify-content: space-around;
+}
+
+.task-card {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.task-card img {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+}
+
+.button {
+    background-color: blue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: darkblue;
+}

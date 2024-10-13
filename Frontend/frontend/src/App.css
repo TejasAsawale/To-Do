@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +35,29 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .dashboard {
+    padding: 10px;
+  }
+
+  .task-container {
+    flex-direction: column;
+  }
+
+  .task-list, .task-status {
+    width: 100%;
+  }
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
 }

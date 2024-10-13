@@ -1,0 +1,24 @@
+.options-menu {
+    width: 250px;
+    background-color: #ff4d4d; 
+    height: 100vh; 
+    padding: 20px;
+    color: white;
+    position: fixed; 
+}
+
+.options-menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.options-menu li {
+    margin: 10px 0;
+}
+
+.options-menu .active {
+    background-color: rgba(255, 255, 255, 0.2); 
+    border-radius: 5px;
+    padding: 10px;
+    color: #333; 
+}
