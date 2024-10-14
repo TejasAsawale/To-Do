@@ -1,84 +1,80 @@
-const Task = require("../models/Task");
+const mongoose = require("mongoose");
+const  taskModel = require("../models/Task");
+const PriorityModel = require("../models/Priority");
+const UserModel = require("../models/User");
 
-// exports.addTask = async (req, res) => {
-//     const { title, description, dueDate, priority, category } = req.body;
-//     try {
-//         const newTask = new Task({ title, description, dueDate, priority, category, collaborators: [req.user.id] });
-//         const task = await newTask.save();
-//         res.status(201).json(task);
-//     } catch (err) {
-//         res.status(500).send("Server error");
-//     }
-//     };
+// Add  new task
+const addtask = async (req, res) => {
+    console.log(req.body);
+    const userid = req.user._id;
 
-async function CreateTask(req, res) {
-    console.log('Request Body:', req.body); // Log the request body
-    console.log('Uploaded file:', req.file); // Log the uploaded file
+    const { title, description, priority, taskDate, status} = req.body;
 
-    const { title, date, priority, taskDescription } = req.body;
-
-    // Check for required fields
-    if (!title || !date || !priority || !taskDescription) {
-        return res.status(400).json({
-            status: false,
-            message: 'All fields are required: title, date, priority, taskDescription'
-        });
-    }
-
-    // Validate priority value
-    const validPriorities = ['extreme', 'moderate', 'low'];
-    if (!validPriorities.includes(priority)) {
-        return res.status(400).json({
-            status: false,
-            message: 'Invalid priority value. Expected: extreme, moderate, low'
-        });
-    }
-
-    // Validate date format
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
-        return res.status(400).json({
-            status: false,
-            message: 'Invalid date format. Expected format: YYYY-MM-DD'
-        });
-    }
+    const allowedPriorities = ["Extreme","Moderate","Low"];
 
     try {
-        const image = req.file ? req.file.path : null;
+        if(!allowedPriorities.includes(priority)) {
+            return res.status(400).send({message: "Invalid priority value", success: false});
+        }
 
-        const task = new Task({
+        const existingtask = await taskModel.findOne({
             title,
-            date: parsedDate,
             priority,
-            taskDescription,
+        });
+        if(existingtask) {
+            return res.status(400).send({ message: "Oops! Task already Exists", success: false});
+        }
+
+        const image = req.file ? req.file.filename : null;
+
+        const newtask = new taskModel({
+            title,
+            description,
+            priority,
+            taskDate,
+            status,
             image,
-            createdBy: req.user.id
+            createdBy: userid,
+            createdAt: Date.now(),
         });
 
-        const savedTask = await task.save();
-        res.status(201).json({
-            status: true,
-            message: 'Task created successfully',
-            data: savedTask
-        });
+        await newtask.save();
+        res.status(201).send({ message: "Task Created Successfully", success: true});
     } catch (error) {
-        console.error('Task creation error:', error);
-        res.status(500).json({
-            status: false,
-            message: error.message
-        });
+        console.error(error);
+        res.status(500).send("Server Error");
     }
-}
+};
 
-// exports.getTasks = async (req, res) => {
-//     try {
-//         const tasks = await Task.find({ collaborators: req.user.id });
-//         res.json(tasks);
-//     } catch (err) {
-//         res.status(500).send("Server error");
-//     }
-// };
+// Add Collaboraters 
+const addCollaborator = async (req, res) => {
+    try {
+        const { id: taskId} = req.params;
+        const { collaboratername, status, createdAt} = req.body;
 
-Module.exports = {
-    CreateTask
-}
+        const task = await taskModel.findById(taskId);
+        if(!task) {
+            return res.status(404).send({message: "Task not found", success: false});
+        }
+
+        const user = await UserModel.findById(collaboratername);
+        if(!user) {
+            return res.status(404).send({ message: "Collaborator are not found", success: false});
+        }
+
+        task.collaboraters.push({
+            collaboratername,
+            status: status || "Not Started",
+            createdAt: Date.now(),
+        });
+
+        await task.save();
+
+        res.status(201).send({message: "Collaborator are Added Successfully", task, success: true,});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({message: "Server error", success: false});
+    }
+};
+
+// Get All Tasks

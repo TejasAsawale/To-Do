@@ -1,49 +1,57 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const taskSchema = new mongoose.Schema({
-    title:{
-        type:String,
-        required:[true,'task title is required'],
-        required:true,
-        trim:true,
+const TaskSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: false,
     },
-    date: {
-        type: Date,
-        required: [true, 'Date is required'],
-        required:true,
+    description: {
+        type: String,
+        required: false,
     },
     priority: {
         type: String,
-        enum: ['extreme', 'moderate', 'low'],
-        required:true,
-        default: 'moderate',
+        enum: ["Extreme", "Moderate", "Low"],
+        required: true,
     },
-    taskDescription: {
+    taskDate: { type: Date,
+        required: false,
+    },
+    status: {
         type: String,
-        required: [true, 'Task description is required'],
-        trim: true,
+        enum: ["Not Started", "Inprogress", "Completed"],
+        default: "Not Started",
     },
     image: {
-        type: String, 
+        type: String,
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
-        required: true,
+        ref: "User",
+        required:"true",
     },
-    createdAt: {
+    createAt: {
         type: Date,
         default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-}, { timestamps: true });
+    }, 
+    collaboraters: [
+        {
+            collaboratername: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+                required: true,
+            }, 
+            status: {
+                type: String,
+                enum: ["Not Started","completed","Inprogress"],
+                default: "Not Started",
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            },
+        },
+    ],
+}); 
 
-taskSchema.pre('save', function (next) {
-    this.updatedAt = Date.now();
-    next();
-});
-const Task = mongoose.model('Task',taskSchema);
-module.exports = Task;
+module.exports = mongoose.model("Task", TaskSchema);

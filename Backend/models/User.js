@@ -1,11 +1,51 @@
-const { type } = require("express/lib/response");
 const mongoose = require("mongoose");
-const UserSchema = new mongoose.Schema({
-    firstName: { type: String, required: true,},
-    lastName: { type: String, required: true},
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema({
+    firstName: {
+        type: String,
+        required: false,
+    },
+    lastName: { 
+        type: String, 
+        required: false,
+    },
+    username: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
+    password: { 
+        type: String, 
+        required: true 
+    },
+    confirmPassword: {
+        type: String,
+        required: false,
+    },
+    image: {
+        type: String,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
-module.exports = mongoose.model("User", UserSchema);
+
+userSchema.pre("save", async function (next) {
+    const user = this;
+    if(user.isModified("password")) {
+        user.password =await bcrypt.hash(user.password, 8);
+    }
+    next();
+});
+userSchema.methods.comparepassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+module.exports = mongoose.model("User", userSchema);
